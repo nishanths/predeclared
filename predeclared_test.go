@@ -63,7 +63,8 @@ func resetFlags() {
 
 func TestAll(t *testing.T) {
 	filenames := []string{
-		"testdata/example.go",
+		"testdata/example1.go",
+		"testdata/example2.go",
 		"testdata/all.go",
 		"testdata/all-q.go",
 		"testdata/no-issues.go",

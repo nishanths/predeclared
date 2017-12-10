@@ -6,7 +6,7 @@
 //
 // The command exits with exit code 1 if an error occured parsing the given
 // files. Otherwise the exit code is 0, even if predeclared identifiers were
-// being overriden. Use the '-exit' flag to exit withexit code 1 when predeclared
+// being overriden. Use the '-exit' flag to exit with exit code 1 when predeclared
 // identifiers are being overriden.
 //
 // Usage
