@@ -153,7 +153,7 @@ func isGoFile(f os.FileInfo) bool {
 	return !f.IsDir() && !strings.HasPrefix(name, ".") && !strings.HasPrefix(name, "_") && strings.HasSuffix(name, ".go")
 }
 
-// https://golang.org/ref/spec#Predeclared_identifiers
+// Keep in sync with https://golang.org/ref/spec#Predeclared_identifiers
 var predeclaredIdents = map[string]bool{
 	"bool":       true,
 	"byte":       true,
@@ -219,6 +219,8 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 		}
 	}
 
+	seenValueSpecs := make(map[*ast.ValueSpec]bool)
+
 	// TODO: consider deduping package name issues for files in the
 	// same directory.
 	maybeAdd(file.Name, "package name")
@@ -238,15 +240,14 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 				return true
 			}
 			for _, spec := range x.Specs {
-				if vspec, ok := spec.(*ast.ValueSpec); ok {
+				if vspec, ok := spec.(*ast.ValueSpec); ok && !seenValueSpecs[vspec] {
+					seenValueSpecs[vspec] = true
 					for _, name := range vspec.Names {
 						maybeAdd(name, kind)
 					}
 				}
 			}
-			// Shouldn't look at the specs again.
-			// Also, specs can't nest other specs, so it's okay to not look deeper.
-			return false
+			return true
 		case *ast.TypeSpec:
 			maybeAdd(x.Name, "type")
 			return true
@@ -286,15 +287,18 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 					}
 				}
 			}
+			// Params and Results will be checked in the *ast.FuncType case.
+			return true
+		case *ast.FuncType:
 			// add params idents
-			for _, field := range x.Type.Params.List {
+			for _, field := range x.Params.List {
 				for _, name := range field.Names {
 					maybeAdd(name, "variable")
 				}
 			}
 			// add returns idents
-			if x.Type.Results != nil {
-				for _, field := range x.Type.Results.List {
+			if x.Results != nil {
+				for _, field := range x.Results.List {
 					for _, name := range field.Names {
 						maybeAdd(name, "variable")
 					}
