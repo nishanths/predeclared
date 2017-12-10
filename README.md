@@ -29,7 +29,7 @@ type F interface {
 	new() T
 }
 
-func (p Pool) new() {}
+func (p Pool) new() T {}
 ```
 
 running:
