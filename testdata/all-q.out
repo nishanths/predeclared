@@ -1,4 +1,3 @@
-testdata/all-q.go:3:9: package name "rune" has same name as predeclared identifier
 testdata/all-q.go:6:2: const "nil" has same name as predeclared identifier
 testdata/all-q.go:7:2: const "len" has same name as predeclared identifier
 testdata/all-q.go:7:7: const "cap" has same name as predeclared identifier

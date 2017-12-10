@@ -228,10 +228,6 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 
 	seenValueSpecs := make(map[*ast.ValueSpec]bool)
 
-	// TODO: consider deduping package name issues for files in the
-	// same directory.
-	maybeAdd(file.Name, "package name")
-
 	// Handle declarations and fields.
 	// https://golang.org/ref/spec#Declarations_and_scope
 	ast.Inspect(file, func(n ast.Node) bool {

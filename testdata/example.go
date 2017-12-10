@@ -1,6 +1,6 @@
 //predeclared -q
 
-package print
+package example
 
 func append(s int) {
 	copy := s
