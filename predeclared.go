@@ -1,5 +1,6 @@
-// Command predeclared prints declarations and fields in the given files
-// that have the same name as one of Go's predeclared identifiers.
+// Command predeclared prints the names and locations of declarations and
+// fields in the given files that have the same name as one of Go's
+// predeclared identifiers.
 //
 // Exit code
 //
@@ -16,6 +17,9 @@
 // even if they have the same name as predeclared identifier. (These kinds aren't
 // included by default since fields and method are always accessed via a
 // qualifier, à la obj.A).
+//
+// The arguments to the command can either be files or directories. If a directory
+// is provided, all Go files in the directory and its subdirectories are checked.
 package main
 
 import (
