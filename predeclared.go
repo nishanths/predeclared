@@ -26,6 +26,7 @@
 //
 // The arguments to the command can either be files or directories. If a directory
 // is provided, all Go files in the directory and its subdirectories are checked.
+// If no arguments are specified, the command reads from standard input.
 package main
 
 import (
