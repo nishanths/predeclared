@@ -18,7 +18,7 @@ See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared 
 Given a file:
 
 ```
-package example
+package print
 
 func append(s int) {
 	copy := s
@@ -41,6 +41,7 @@ predeclared -q file.go
 prints:
 
 ```
+testdata/example.go:1:9: package name "print" has same name as predeclared identifier
 testdata/example.go:3:6: function "append" has same name as predeclared identifier
 testdata/example.go:4:2: variable "copy" has same name as predeclared identifier
 testdata/example.go:9:2: method "new" has same name as predeclared identifier

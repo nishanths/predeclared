@@ -1,3 +1,4 @@
+testdata/all.go:1:9: package name "rune" has same name as predeclared identifier
 testdata/all.go:4:2: const "nil" has same name as predeclared identifier
 testdata/all.go:5:2: const "len" has same name as predeclared identifier
 testdata/all.go:5:7: const "cap" has same name as predeclared identifier
