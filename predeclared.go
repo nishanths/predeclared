@@ -1,3 +1,21 @@
+// Command predeclared prints declarations and fields in the given files
+// that have the same name as one of Go's predeclared identifiers.
+//
+// Exit code
+//
+// The command exits with exit code 1 if an error occured parsing the given
+// files. Otherwise the exit code is 0, even if issues were found. Use the
+// '-exit' flag to use a exit code 1 when issues are found.
+//
+// Usage
+//
+// Run 'predeclared -h' for help.
+//
+// If the '-q' flag isn't specified, the command does not report the names of
+// fields in struct types, methods in interface types, and method declarations
+// even if they have the same name as predeclared identifier. (These kinds aren't
+// included by default since fields and method are always accessed via a
+// qualifier, à la obj.A).
 package main
 
 import (

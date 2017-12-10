@@ -10,7 +10,7 @@ $ go get -u github.com/nishanths/predeclared
 $ predeclared file1.go file2.go dir1
 ```
 
-See godoc or `predeclared -h` for more.
+See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared -h` for more.
 
 ## Example
 
