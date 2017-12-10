@@ -1,4 +1,4 @@
-# predeclared
+# predeclared [![Build Status](https://travis-ci.org/nishanths/predeclared.svg?branch=master)](https://travis-ci.org/nishanths/predeclared)
 
 Find declarations that override one of Go's predeclared identifiers (`new`, `make`, `append`, etc.).
 
