@@ -5,3 +5,7 @@ func Bar() {
 }
 
 func (m *M) error() {}
+
+type S struct {
+	int
+}
