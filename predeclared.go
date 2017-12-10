@@ -84,7 +84,7 @@ func main() {
 			path := flag.Arg(i)
 			info, err := os.Stat(path)
 			if err != nil {
-				fmt.Fprint(os.Stderr, err)
+				fmt.Fprintln(os.Stderr, err)
 				exitCode = 1
 			} else if info.IsDir() {
 				handleDir(fset, path)
@@ -113,7 +113,7 @@ func handleFile(fset *token.FileSet, stdin bool, filename string, out io.Writer)
 		src, err = ioutil.ReadFile(filename)
 	}
 	if err != nil {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, err)
 		exitCode = 1
 		return
 	}
@@ -150,7 +150,7 @@ func handleDir(fset *token.FileSet, p string) {
 		handleFile(fset, false, path, os.Stdout)
 		return nil
 	}); err != nil {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, err)
 		exitCode = 1
 	}
 }
