@@ -7,8 +7,9 @@ The list of predeclared identifiers can be found in the [spec](https://golang.or
 ## Usage
 
 ```
-$ go get -u github.com/nishanths/predeclared
-$ predeclared file1.go file2.go dir1
+go get -u github.com/nishanths/predeclared
+
+predeclared dir1 dir2 file.go
 ```
 
 See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared -h` for more.
@@ -20,30 +21,22 @@ Given a file:
 ```
 package print
 
-func append(s int) {
-	copy := s
-	x.Push(copy)
+func make(i *int) T {
+	copy := *i
+	return T{copy}
 }
-
-type F interface {
-	new() T
-}
-
-func (p Pool) new() T {}
 ```
 
 running:
 
 ```
-predeclared -q file.go
+predeclared example.go
 ```
 
 prints:
 
 ```
-testdata/example.go:1:9: package name "print" has same name as predeclared identifier
-testdata/example.go:3:6: function "append" has same name as predeclared identifier
-testdata/example.go:4:2: variable "copy" has same name as predeclared identifier
-testdata/example.go:9:2: method "new" has same name as predeclared identifier
-testdata/example.go:12:15: method "new" has same name as predeclared identifier
+example.go:1:9: package name "print" has same name as predeclared identifier
+example.go:3:6: function "make" has same name as predeclared identifier
+example.go:4:2: variable "copy" has same name as predeclared identifier
 ```

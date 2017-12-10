@@ -18,11 +18,11 @@
 // which prints the list of issues to standard output.
 // See 'predeclared -h' for help.
 //
-// If the '-q' flag isn't specified, the command does not report field names
-// in struct types, method names in interface types, and method names in method
-// declarations even if they have the same name as predeclared identifier.
-// (These aren't included by default since fields and method are always
-// accessed by a qualifier, à la obj.Field).
+// If the '-q' flag isn't specified, the command never reports fields
+// in structs, methods in interfaces, and method names in method
+// declarations as issues. (These aren't included by default since fields and
+// method are always accessed by a qualifier—à la obj.Field—and hence are less
+// likely to cause confusion when reading code.)
 //
 // The arguments to the command can either be files or directories. If a directory
 // is provided, all Go files in the directory and its subdirectories are checked.
@@ -70,7 +70,7 @@ var exitCode = 0
 
 func main() {
 	log.SetFlags(0)
-	log.SetPrefix("declfmt: ")
+	log.SetPrefix("predeclared: ")
 
 	flag.Usage = usage
 	flag.Parse()
@@ -231,6 +231,13 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 	// TODO: consider deduping package name issues for files in the
 	// same directory.
 	maybeAdd(file.Name, "package name")
+
+	for _, spec := range file.Imports {
+		if spec.Name == nil {
+			continue
+		}
+		maybeAdd(spec.Name, "import name")
+	}
 
 	// Handle declarations and fields.
 	// https://golang.org/ref/spec#Declarations_and_scope

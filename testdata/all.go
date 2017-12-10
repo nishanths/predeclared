@@ -1,5 +1,7 @@
 package rune
 
+import false "example.org/f"
+
 const (
 	nil      T = true
 	len, cap   = 1, 100
