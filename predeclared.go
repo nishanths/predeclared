@@ -5,18 +5,24 @@
 // Exit code
 //
 // The command exits with exit code 1 if an error occured parsing the given
-// files. Otherwise the exit code is 0, even if issues were found. Use the
-// '-exit' flag to use a exit code 1 when issues are found.
+// files. Otherwise the exit code is 0, even if predeclared identifiers were
+// being overriden. Use the '-exit' flag to exit withexit code 1 when predeclared
+// identifiers are being overriden.
 //
 // Usage
 //
-// Run 'predeclared -h' for help.
+// Common usage is:
 //
-// If the '-q' flag isn't specified, the command does not report the names of
-// fields in struct types, methods in interface types, and method declarations
-// even if they have the same name as predeclared identifier. (These kinds aren't
-// included by default since fields and method are always accessed via a
-// qualifier, à la obj.A).
+//  predeclared file1.go file2.go dir1 dir2
+//
+// which prints the list of issues to standard output.
+// See 'predeclared -h' for help.
+//
+// If the '-q' flag isn't specified, the command does not report field names
+// in struct types, method names in interface types, and method names in method
+// declarations even if they have the same name as predeclared identifier.
+// (These aren't included by default since fields and method are always
+// accessed by a qualifier, à la obj.Field).
 //
 // The arguments to the command can either be files or directories. If a directory
 // is provided, all Go files in the directory and its subdirectories are checked.
