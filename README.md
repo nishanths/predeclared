@@ -9,7 +9,7 @@ The list of predeclared identifiers can be found in the [spec](https://golang.or
 ```
 go get -u github.com/nishanths/predeclared
 
-predeclared dir1 dir2 file.go
+predeclared [flags] [path ...]
 ```
 
 See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared -h` for more.

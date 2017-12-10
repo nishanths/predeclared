@@ -18,11 +18,12 @@
 // which prints the list of issues to standard output.
 // See 'predeclared -h' for help.
 //
-// If the '-q' flag isn't specified, the command never reports fields
-// in structs, methods in interfaces, and method names in method
-// declarations as issues. (These aren't included by default since fields and
-// method are always accessed by a qualifier—à la obj.Field—and hence are less
-// likely to cause confusion when reading code.)
+// If the '-q' flag isn't specified, the command never reports struct fields,
+// interface methods, and method names as issues.
+// (These aren't included by default since fields and method are always
+// accessed by a qualifier—à la obj.Field—and hence are less likely to cause
+// confusion when reading code even if they have the same name as a predeclared
+// identifier.)
 //
 // The arguments to the command can either be files or directories. If a directory
 // is provided, all Go files in the directory and its subdirectories are checked.
@@ -47,12 +48,12 @@ import (
 const help = `Find declarations and fields that override predeclared identifiers.
 
 Usage: 
-  predeclared [flags] [path...]
+  predeclared [flags] [path ...]
 
 Flags:
   -e	 Report all parse errors, not just the first 10 on different lines
   -exit  Set exit status to 1 if issues are found
-  -q     Include methods and fields that have the same name as predeclared identifiers
+  -q     Include method names and field names while checking for issues
 `
 
 func usage() {
@@ -297,7 +298,7 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 			if x.Recv != nil {
 				for _, field := range x.Recv.List {
 					for _, name := range field.Names {
-						maybeAdd(name, "variable")
+						maybeAdd(name, "receiver")
 					}
 				}
 			}
@@ -307,14 +308,14 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 			// add params idents
 			for _, field := range x.Params.List {
 				for _, name := range field.Names {
-					maybeAdd(name, "variable")
+					maybeAdd(name, "param")
 				}
 			}
 			// add returns idents
 			if x.Results != nil {
 				for _, field := range x.Results.List {
 					for _, name := range field.Names {
-						maybeAdd(name, "variable")
+						maybeAdd(name, "named return")
 					}
 				}
 			}
