@@ -24,6 +24,12 @@
 // confusion when reading code even if they have the same name as a predeclared
 // identifier.)
 //
+// The '-ignore' flag can be used to specify predeclared identifiers to not
+// report issues for. For example, to not report overriding of the predeclared
+// identifiers 'new' and 'real', set the flag like so:
+//
+//  -ignore=new,real
+//
 // The arguments to the command can either be files or directories. If a directory
 // is provided, all Go files in the directory and its subdirectories are checked.
 // If no arguments are specified, the command reads from standard input.
@@ -50,9 +56,9 @@ Usage:
   predeclared [flags] [path ...]
 
 Flags:
-  -e	 Report all parse errors, not just the first 10 on different lines
-  -exit  Set exit status to 1 if issues are found
-  -q     Include method names and field names while checking for issues
+  -e	   Report all parse errors, not just the first 10 on different lines
+  -ignore  Comma-separated list of predeclared identifiers to not report on
+  -q       Include method names and field names while checking
 `
 
 func usage() {
@@ -62,10 +68,28 @@ func usage() {
 
 var (
 	allErrors = flag.Bool("e", false, "")
+	ignore    = flag.String("ignore", "", "")
 	qualified = flag.Bool("q", false, "")
 )
 
 var exitCode = 0
+var ignoredIdents map[string]bool
+
+func initIgnoredIdents() {
+	for _, s := range strings.Split(*ignore, ",") {
+		ident := strings.TrimSpace(s)
+		if ident == "" {
+			continue
+		}
+		if !predeclaredIdents[ident] {
+			log.Fatalf("ident %q in -ignore is not a predeclared ident", ident)
+		}
+		if ignoredIdents == nil {
+			ignoredIdents = make(map[string]bool)
+		}
+		ignoredIdents[ident] = true
+	}
+}
 
 func main() {
 	log.SetFlags(0)
@@ -73,6 +97,7 @@ func main() {
 
 	flag.Usage = usage
 	flag.Parse()
+	initIgnoredIdents()
 
 	var fset = token.NewFileSet()
 	if flag.NArg() == 0 {
@@ -218,7 +243,7 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 	var issues []Issue
 
 	maybeAdd := func(x *ast.Ident, kind string) {
-		if predeclaredIdents[x.Name] {
+		if !ignoredIdents[x.Name] && predeclaredIdents[x.Name] {
 			issues = append(issues, Issue{x, kind, fset})
 		}
 	}

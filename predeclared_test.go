@@ -26,7 +26,7 @@ got:  %s
 	}
 }
 
-func parseFlags(p string) {
+func setupConfig(p string) {
 	// Get the first line.
 	b, err := ioutil.ReadFile(p)
 	if err != nil {
@@ -46,18 +46,26 @@ func parseFlags(p string) {
 	}
 	// Parse.
 	args := strings.Fields(line)
-	for i := 0; i < len(args); i++ {
+	for i := 0; i < len(args); {
 		arg := args[i]
 		switch arg {
+		case "-ignore":
+			i++
+			*ignore = args[i]
 		case "-q":
 			*qualified = true
 		default:
 			panic("unhandled flag")
 		}
+		i++
 	}
+
+	initIgnoredIdents()
 }
 
-func resetFlags() {
+func resetConfig() {
+	ignoredIdents = nil
+	*ignore = ""
 	*qualified = false
 }
 
@@ -65,6 +73,7 @@ func TestAll(t *testing.T) {
 	filenames := []string{
 		"testdata/example1.go",
 		"testdata/example2.go",
+		"testdata/ignore.go",
 		"testdata/all.go",
 		"testdata/all-q.go",
 		"testdata/no-issues.go",
@@ -75,8 +84,8 @@ func TestAll(t *testing.T) {
 		if testing.Verbose() {
 			t.Logf("test [%d]: %s", i, path)
 		}
-		resetFlags()
-		parseFlags(path)
+		resetConfig()
+		setupConfig(path)
 		runOneFile(t, path)
 	}
 }
