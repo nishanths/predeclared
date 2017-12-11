@@ -52,7 +52,7 @@ import (
 
 const help = `Find declarations and fields that override predeclared identifiers.
 
-Usage: 
+Usage:
   predeclared [flags] [path ...]
 
 Flags:
@@ -82,7 +82,7 @@ func initIgnoredIdents() {
 			continue
 		}
 		if !predeclaredIdents[ident] {
-			log.Printf("ident %q in -ignore is not a predeclared ident\n", ident)
+			log.Printf("ident %q in -ignore is not a predeclared ident", ident)
 			os.Exit(2)
 		}
 		if ignoredIdents == nil {
