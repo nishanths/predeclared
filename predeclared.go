@@ -82,7 +82,8 @@ func initIgnoredIdents() {
 			continue
 		}
 		if !predeclaredIdents[ident] {
-			log.Fatalf("ident %q in -ignore is not a predeclared ident", ident)
+			log.Printf("ident %q in -ignore is not a predeclared ident\n", ident)
+			os.Exit(2)
 		}
 		if ignoredIdents == nil {
 			ignoredIdents = make(map[string]bool)
