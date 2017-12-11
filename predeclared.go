@@ -5,9 +5,8 @@
 // Exit code
 //
 // The command exits with exit code 1 if an error occured parsing the given
-// files. Otherwise the exit code is 0, even if predeclared identifiers were
-// being overriden. Use the '-exit' flag to exit with exit code 1 when predeclared
-// identifiers are being overriden.
+// files or if it finds predeclared identifiers being overriden. It exits
+// with exit code 2 if the command was invoked incorrectly.
 //
 // Usage
 //
@@ -64,7 +63,6 @@ func usage() {
 var (
 	allErrors = flag.Bool("e", false, "")
 	qualified = flag.Bool("q", false, "")
-	setExit   = flag.Bool("exit", false, "")
 )
 
 var exitCode = 0
@@ -130,9 +128,7 @@ func handleFile(fset *token.FileSet, stdin bool, filename string, out io.Writer)
 		return
 	}
 
-	if *setExit {
-		exitCode = 1
-	}
+	exitCode = 1
 
 	for _, issue := range issues {
 		fmt.Fprintf(out, "%s\n", issue)
