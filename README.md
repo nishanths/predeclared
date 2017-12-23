@@ -4,27 +4,6 @@ Find code that overrides one of Go's predeclared identifiers (`new`, `make`, `ap
 
 The list of predeclared identifiers can be found in the [spec](https://golang.org/ref/spec#Predeclared_identifiers).
 
-It checks the following code by default:
-
-```
-package names
-named imports
-type names
-variables and constants
-function names
-method receivers
-parameters
-named returns
-labels
-```
-
-It also checks the following if the `-q` flag is specified:
-
-```
-field names
-method names
-```
-
 ## Usage
 
 ```
@@ -40,12 +19,23 @@ See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared 
 Given a file:
 
 ```
-package print
+package main
 
-func make(i *int) T {
-	copy := *i
-	return T{copy}
+import "log"
+
+// welp, the order of the parameters is different from the builtin
+// copy function!
+func copy(src, dst []T) {
+	for i := range dst {
+		if i == len(src) {
+			break
+		}
+		string := src[i].s
+		dst[i].s = string
+	}
 }
+
+func print(t T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
 ```
 
 running:
@@ -57,7 +47,7 @@ predeclared example.go
 prints:
 
 ```
-example.go:1:9: package name "print" has same name as predeclared identifier
-example.go:3:6: function "make" has same name as predeclared identifier
-example.go:4:2: variable "copy" has same name as predeclared identifier
+example.go:7:6: function "copy" has same name as predeclared identifier
+example.go:12:3: variable "string" has same name as predeclared identifier
+example.go:17:6: function "print" has same name as predeclared identifier
 ```

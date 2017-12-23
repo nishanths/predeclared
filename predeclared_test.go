@@ -73,6 +73,7 @@ func TestAll(t *testing.T) {
 	filenames := []string{
 		"testdata/example1.go",
 		"testdata/example2.go",
+		"testdata/example3.go",
 		"testdata/ignore.go",
 		"testdata/all.go",
 		"testdata/all-q.go",

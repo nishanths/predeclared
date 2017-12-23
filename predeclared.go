@@ -4,7 +4,7 @@
 //
 // Exit code
 //
-// The command exits with exit code 1 if an error occured parsing the given
+// The command exits with exit code 1 if an error occurred parsing the given
 // files or if it finds predeclared identifiers being overriden. It exits
 // with exit code 2 if the command was invoked incorrectly.
 //
@@ -39,6 +39,7 @@ import (
 	"flag"
 	"fmt"
 	"go/ast"
+	"go/doc"
 	"go/parser"
 	"go/scanner"
 	"go/token"
@@ -81,7 +82,7 @@ func initIgnoredIdents() {
 		if ident == "" {
 			continue
 		}
-		if !predeclaredIdents[ident] {
+		if !doc.IsPredeclared(ident) {
 			log.Printf("ident %q in -ignore is not a predeclared ident", ident)
 			os.Exit(2)
 		}
@@ -183,50 +184,8 @@ func isGoFile(f os.FileInfo) bool {
 	return !f.IsDir() && !strings.HasPrefix(name, ".") && !strings.HasPrefix(name, "_") && strings.HasSuffix(name, ".go")
 }
 
-// Keep in sync with https://golang.org/ref/spec#Predeclared_identifiers
-var predeclaredIdents = map[string]bool{
-	"bool":       true,
-	"byte":       true,
-	"complex64":  true,
-	"complex128": true,
-	"error":      true,
-	"float32":    true,
-	"float64":    true,
-	"int":        true,
-	"int8":       true,
-	"int16":      true,
-	"int32":      true,
-	"int64":      true,
-	"rune":       true,
-	"string":     true,
-	"uint":       true,
-	"uint8":      true,
-	"uint16":     true,
-	"uint32":     true,
-	"uint64":     true,
-	"uintptr":    true,
-
-	"true":  true,
-	"false": true,
-	"iota":  true,
-
-	"nil": true,
-
-	"append":  true,
-	"cap":     true,
-	"close":   true,
-	"complex": true,
-	"copy":    true,
-	"delete":  true,
-	"imag":    true,
-	"len":     true,
-	"make":    true,
-	"new":     true,
-	"panic":   true,
-	"print":   true,
-	"println": true,
-	"real":    true,
-	"recover": true,
+func isIgnoredIdent(name string) bool {
+	return ignoredIdents[name]
 }
 
 type Issue struct {
@@ -244,7 +203,7 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 	var issues []Issue
 
 	maybeAdd := func(x *ast.Ident, kind string) {
-		if !ignoredIdents[x.Name] && predeclaredIdents[x.Name] {
+		if !isIgnoredIdent(x.Name) && doc.IsPredeclared(x.Name) {
 			issues = append(issues, Issue{x, kind, fset})
 		}
 	}
