@@ -5,7 +5,7 @@
 // Exit code
 //
 // The command exits with exit code 1 if an error occurred parsing the given
-// files or if it finds predeclared identifiers being overriden. It exits
+// files or if it finds predeclared identifiers being overridden. It exits
 // with exit code 2 if the command was invoked incorrectly.
 //
 // Usage

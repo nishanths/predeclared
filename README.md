@@ -35,7 +35,8 @@ func copy(src, dst []T) {
 	}
 }
 
-func print(t T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
+// welp, not the builtin print.
+func print(t *T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
 ```
 
 running:
@@ -49,5 +50,5 @@ prints:
 ```
 example.go:7:6: function "copy" has same name as predeclared identifier
 example.go:12:3: variable "string" has same name as predeclared identifier
-example.go:17:6: function "print" has same name as predeclared identifier
+example.go:18:6: function "print" has same name as predeclared identifier
 ```

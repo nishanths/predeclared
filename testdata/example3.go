@@ -14,4 +14,5 @@ func copy(src, dst []T) {
 	}
 }
 
-func print(t T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
+// welp, not the builtin print.
+func print(t *T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
