@@ -39,7 +39,6 @@ import (
 	"flag"
 	"fmt"
 	"go/ast"
-	"go/doc"
 	"go/parser"
 	"go/scanner"
 	"go/token"
@@ -82,7 +81,7 @@ func initIgnoredIdents() {
 		if ident == "" {
 			continue
 		}
-		if !doc.IsPredeclared(ident) {
+		if !isPredeclaredIdent(ident) {
 			log.Printf("ident %q in -ignore is not a predeclared ident", ident)
 			os.Exit(2)
 		}
@@ -203,7 +202,7 @@ func processFile(fset *token.FileSet, file *ast.File) []Issue {
 	var issues []Issue
 
 	maybeAdd := func(x *ast.Ident, kind string) {
-		if !isIgnoredIdent(x.Name) && doc.IsPredeclared(x.Name) {
+		if !isIgnoredIdent(x.Name) && isPredeclaredIdent(x.Name) {
 			issues = append(issues, Issue{x, kind, fset})
 		}
 	}
