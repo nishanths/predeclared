@@ -1,6 +1,6 @@
 // +build go1.8
 
-package main
+package api
 
 import "go/doc"
 
