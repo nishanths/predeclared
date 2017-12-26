@@ -8,7 +8,11 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
+
+	"github.com/nishanths/predeclared/api"
 )
+
+var config *api.Config
 
 func outPath(p string) string { return strings.TrimSuffix(p, ".go") + ".out" }
 
@@ -40,6 +44,7 @@ func setupConfig(p string) {
 	const prefix = "//predeclared"
 	line := string(b[:idx])
 	if !strings.HasPrefix(line, prefix) {
+		config = initConfig()
 		return
 	} else {
 		line = strings.TrimPrefix(line, prefix)
@@ -60,11 +65,11 @@ func setupConfig(p string) {
 		i++
 	}
 
-	initIgnoredIdents()
+	config = initConfig()
 }
 
 func resetConfig() {
-	ignoredIdents = nil
+	config = nil
 	*ignore = ""
 	*qualified = false
 }
@@ -111,7 +116,7 @@ func runOneFile(t *testing.T, path string) {
 		return
 	}
 
-	issues := processFile(fset, file)
+	issues := api.ProcessFile(config, fset, file)
 	var buf bytes.Buffer
 	for _, issue := range issues {
 		fmt.Fprintf(&buf, "%s\n", issue)

@@ -38,7 +38,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go/ast"
 	"go/parser"
 	"go/scanner"
 	"go/token"
@@ -48,6 +47,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/nishanths/predeclared/api"
 )
 
 const help = `Find declarations and fields that override predeclared identifiers.
@@ -73,23 +74,20 @@ var (
 )
 
 var exitCode = 0
-var ignoredIdents map[string]bool
 
-func initIgnoredIdents() {
+func initConfig() *api.Config {
+	config := &api.Config{
+		Qualified:     *qualified,
+		IgnoredIdents: map[string]bool{},
+	}
 	for _, s := range strings.Split(*ignore, ",") {
 		ident := strings.TrimSpace(s)
 		if ident == "" {
 			continue
 		}
-		if !isPredeclaredIdent(ident) {
-			log.Printf("ident %q in -ignore is not a predeclared ident", ident)
-			os.Exit(2)
-		}
-		if ignoredIdents == nil {
-			ignoredIdents = make(map[string]bool)
-		}
-		ignoredIdents[ident] = true
+		config.IgnoredIdents[ident] = true
 	}
+	return config
 }
 
 func main() {
@@ -98,11 +96,11 @@ func main() {
 
 	flag.Usage = usage
 	flag.Parse()
-	initIgnoredIdents()
+	config := initConfig()
 
 	var fset = token.NewFileSet()
 	if flag.NArg() == 0 {
-		handleFile(fset, true, "<standard input>", os.Stdout) // use the same filename that gofmt uses
+		handleFile(config, fset, true, "<standard input>", os.Stdout) // use the same filename that gofmt uses
 	} else {
 		for i := 0; i < flag.NArg(); i++ {
 			path := flag.Arg(i)
@@ -111,9 +109,9 @@ func main() {
 				fmt.Fprintln(os.Stderr, err)
 				exitCode = 1
 			} else if info.IsDir() {
-				handleDir(fset, path)
+				handleDir(config, fset, path)
 			} else {
-				handleFile(fset, false, path, os.Stdout)
+				handleFile(config, fset, false, path, os.Stdout)
 			}
 		}
 	}
@@ -128,7 +126,7 @@ func parserMode() parser.Mode {
 	return parser.ParseComments
 }
 
-func handleFile(fset *token.FileSet, stdin bool, filename string, out io.Writer) {
+func handleFile(config *api.Config, fset *token.FileSet, stdin bool, filename string, out io.Writer) {
 	var src []byte
 	var err error
 	if stdin {
@@ -149,7 +147,7 @@ func handleFile(fset *token.FileSet, stdin bool, filename string, out io.Writer)
 		return
 	}
 
-	issues := processFile(fset, file)
+	issues := api.ProcessFile(config, fset, file)
 	if len(issues) == 0 {
 		return
 	}
@@ -161,7 +159,7 @@ func handleFile(fset *token.FileSet, stdin bool, filename string, out io.Writer)
 	}
 }
 
-func handleDir(fset *token.FileSet, p string) {
+func handleDir(config *api.Config, fset *token.FileSet, p string) {
 	if err := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -169,7 +167,7 @@ func handleDir(fset *token.FileSet, p string) {
 		if !isGoFile(info) {
 			return nil
 		}
-		handleFile(fset, false, path, os.Stdout)
+		handleFile(config, fset, false, path, os.Stdout)
 		return nil
 	}); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -181,142 +179,4 @@ func isGoFile(f os.FileInfo) bool {
 	// ignore non-Go files
 	name := f.Name()
 	return !f.IsDir() && !strings.HasPrefix(name, ".") && !strings.HasPrefix(name, "_") && strings.HasSuffix(name, ".go")
-}
-
-func isIgnoredIdent(name string) bool {
-	return ignoredIdents[name]
-}
-
-type Issue struct {
-	ident *ast.Ident
-	kind  string
-	fset  *token.FileSet
-}
-
-func (i Issue) String() string {
-	pos := i.fset.Position(i.ident.Pos())
-	return fmt.Sprintf("%s: %s %q has same name as predeclared identifier", pos, i.kind, i.ident.Name)
-}
-
-func processFile(fset *token.FileSet, file *ast.File) []Issue {
-	var issues []Issue
-
-	maybeAdd := func(x *ast.Ident, kind string) {
-		if !isIgnoredIdent(x.Name) && isPredeclaredIdent(x.Name) {
-			issues = append(issues, Issue{x, kind, fset})
-		}
-	}
-
-	seenValueSpecs := make(map[*ast.ValueSpec]bool)
-
-	// TODO: consider deduping package name issues for files in the
-	// same directory.
-	maybeAdd(file.Name, "package name")
-
-	for _, spec := range file.Imports {
-		if spec.Name == nil {
-			continue
-		}
-		maybeAdd(spec.Name, "import name")
-	}
-
-	// Handle declarations and fields.
-	// https://golang.org/ref/spec#Declarations_and_scope
-	ast.Inspect(file, func(n ast.Node) bool {
-		switch x := n.(type) {
-		case *ast.GenDecl:
-			var kind string
-			switch x.Tok {
-			case token.CONST:
-				kind = "const"
-			case token.VAR:
-				kind = "variable"
-			default:
-				return true
-			}
-			for _, spec := range x.Specs {
-				if vspec, ok := spec.(*ast.ValueSpec); ok && !seenValueSpecs[vspec] {
-					seenValueSpecs[vspec] = true
-					for _, name := range vspec.Names {
-						maybeAdd(name, kind)
-					}
-				}
-			}
-			return true
-		case *ast.TypeSpec:
-			maybeAdd(x.Name, "type")
-			return true
-		case *ast.StructType:
-			if *qualified && x.Fields != nil {
-				for _, field := range x.Fields.List {
-					for _, name := range field.Names {
-						maybeAdd(name, "field")
-					}
-				}
-			}
-			return true
-		case *ast.InterfaceType:
-			if *qualified && x.Methods != nil {
-				for _, meth := range x.Methods.List {
-					for _, name := range meth.Names {
-						maybeAdd(name, "method")
-					}
-				}
-			}
-			return true
-		case *ast.FuncDecl:
-			if x.Recv == nil {
-				// it's a function
-				maybeAdd(x.Name, "function")
-			} else {
-				// it's a method
-				if *qualified {
-					maybeAdd(x.Name, "method")
-				}
-			}
-			// add receivers idents
-			if x.Recv != nil {
-				for _, field := range x.Recv.List {
-					for _, name := range field.Names {
-						maybeAdd(name, "receiver")
-					}
-				}
-			}
-			// Params and Results will be checked in the *ast.FuncType case.
-			return true
-		case *ast.FuncType:
-			// add params idents
-			for _, field := range x.Params.List {
-				for _, name := range field.Names {
-					maybeAdd(name, "param")
-				}
-			}
-			// add returns idents
-			if x.Results != nil {
-				for _, field := range x.Results.List {
-					for _, name := range field.Names {
-						maybeAdd(name, "named return")
-					}
-				}
-			}
-			return true
-		case *ast.LabeledStmt:
-			maybeAdd(x.Label, "label")
-			return true
-		case *ast.AssignStmt:
-			// We only care about short variable declarations, which use token.DEFINE.
-			if x.Tok == token.DEFINE {
-				for _, expr := range x.Lhs {
-					if ident, ok := expr.(*ast.Ident); ok {
-						maybeAdd(ident, "variable")
-					}
-				}
-			}
-			return true
-		default:
-			return true
-		}
-	})
-
-	return issues
 }
