@@ -14,16 +14,16 @@ predeclared [flags] [path ...]
 
 See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared -h` for more.
 
-## Example
+## Examples
 
 Given a file:
 
-```
+```go
 package main
 
 import "log"
 
-// welp, the order of the parameters is different from the builtin
+// welp, the order of the parameters is different from the built-in
 // copy function!
 func copy(src, dst []T) {
 	for i := range dst {
@@ -35,7 +35,7 @@ func copy(src, dst []T) {
 	}
 }
 
-// welp, not the builtin print.
+// welp, not the built-in print.
 func print(t *T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
 ```
 
@@ -51,4 +51,14 @@ prints:
 example.go:7:6: function "copy" has same name as predeclared identifier
 example.go:12:3: variable "string" has same name as predeclared identifier
 example.go:18:6: function "print" has same name as predeclared identifier
+```
+
+In the standard libary's `text` package:
+
+```sh
+$ predeclared /usr/local/go/src/text
+/usr/local/go/src/text/template/exec_test.go:209:21: param "error" has same name as predeclared identifier
+/usr/local/go/src/text/template/parse/node.go:496:33: param "true" has same name as predeclared identifier
+/usr/local/go/src/text/template/parse/node.go:537:3: variable "rune" has same name as predeclared identifier
+/usr/local/go/src/text/template/template.go:215:30: param "new" has same name as predeclared identifier
 ```
