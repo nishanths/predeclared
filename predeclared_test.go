@@ -17,7 +17,6 @@ var config *api.Config
 func outPath(p string) string { return strings.TrimSuffix(p, ".go") + ".out" }
 
 func equalBytes(t *testing.T, a, b []byte, normalize func([]byte) []byte) {
-	t.Helper()
 	if normalize != nil {
 		a = normalize(a)
 		b = normalize(b)
