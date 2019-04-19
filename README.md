@@ -1,18 +1,15 @@
-# predeclared [![Build Status](https://travis-ci.org/nishanths/predeclared.svg?branch=master)](https://travis-ci.org/nishanths/predeclared)
+# predeclared [![Build Status](https://travis-ci.org/nishanths/predeclared.svg?branch=master)](https://travis-ci.org/nishanths/predeclared) [![Godoc](https://godoc.org/github.com/nishanths/predeclared?status.svg)](http://godoc.org/github.com/nishanths/predeclared)
 
-Find code that overrides one of Go's predeclared identifiers (`new`, `make`, `append`, etc.).
+
+Find code that overrides one of Go's predeclared identifiers (`new`, `make`, `append` `uint`, etc.).
 
 The list of predeclared identifiers can be found in the [spec](https://golang.org/ref/spec#Predeclared_identifiers).
 
-## Usage
-
 ```
 go get -u github.com/nishanths/predeclared
-
-predeclared [flags] [path ...]
 ```
 
-See [godoc](https://godoc.org/github.com/nishanths/predeclared) or `predeclared -h` for more.
+See [godoc](https://godoc.org/github.com/nishanths/predeclared) or run `predeclared -h` for flags and usage.
 
 ## Examples
 
@@ -21,22 +18,15 @@ Given a file:
 ```go
 package main
 
-import "log"
+func copy()  {}
+func print() {}
 
-// welp, the order of the parameters is different from the built-in
-// copy function!
-func copy(src, dst []T) {
-	for i := range dst {
-		if i == len(src) {
-			break
-		}
-		string := src[i].s
-		dst[i].s = string
-	}
+func foo() string {
+	string := "x"
+	return string
 }
 
-// welp, not the built-in print.
-func print(t *T) { log.Printf("{ x=%d, y=%d }", t.x, t.y) }
+type int struct{}
 ```
 
 running:
@@ -48,12 +38,13 @@ predeclared example.go
 prints:
 
 ```
-example.go:7:6: function "copy" has same name as predeclared identifier
-example.go:12:3: variable "string" has same name as predeclared identifier
-example.go:18:6: function "print" has same name as predeclared identifier
+example.go:3:6: function "copy" has same name as predeclared identifier
+example.go:4:6: function "print" has same name as predeclared identifier
+example.go:7:2: variable "string" has same name as predeclared identifier
+example.go:11:6: type "int" has same name as predeclared identifier
 ```
 
-In the standard libary's `text` package:
+Running the program on the standard library's `text` package's path produces:
 
 ```sh
 $ predeclared /usr/local/go/src/text
