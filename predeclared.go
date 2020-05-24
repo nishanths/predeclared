@@ -13,7 +13,7 @@
 // Flags
 //
 // The '-q' boolean flag, if set, indicates to the command to check
-// struct field names, interface methods, and method names -- in addition to
+// struct field names, interface methods, and method names — in addition to
 // the default checks. (These checks aren't included by default since fields and method are always
 // accessed by a qualifier—à la obj.Field—and hence are less likely to cause
 // confusion when reading code even if they have the same name as a predeclared

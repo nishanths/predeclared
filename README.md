@@ -6,17 +6,17 @@ Find code that overrides one of Go's predeclared identifiers (`new`, `make`, `ap
 The list of predeclared identifiers can be found in the [spec](https://golang.org/ref/spec#Predeclared_identifiers).
 
 ```
-go get -u github.com/nishanths/predeclared
+go get github.com/nishanths/predeclared
 ```
 
-See [godoc](https://godoc.org/github.com/nishanths/predeclared) or run `predeclared -h` for flags and usage.
+See [godoc](https://godoc.org/github.com/nishanths/predeclared) or run `predeclared` without arguments to print usage.
 
 ## Examples
 
-Given a file:
+Given a package with the file:
 
 ```go
-package main
+package pkg // import "example.org/foo/pkg"
 
 func copy()  {}
 func print() {}
@@ -32,7 +32,7 @@ type int struct{}
 running:
 
 ```
-predeclared example.go
+predeclared example.org/foo/pkg
 ```
 
 prints:
@@ -47,7 +47,7 @@ example.go:11:6: type "int" has same name as predeclared identifier
 Running the program on the standard library's `text` package's path produces:
 
 ```sh
-$ predeclared /usr/local/go/src/text
+$ predeclared text
 /usr/local/go/src/text/template/exec_test.go:209:21: param "error" has same name as predeclared identifier
 /usr/local/go/src/text/template/parse/node.go:496:33: param "true" has same name as predeclared identifier
 /usr/local/go/src/text/template/parse/node.go:537:3: variable "rune" has same name as predeclared identifier
