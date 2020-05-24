@@ -10,3 +10,4 @@ matrix:
     - go: master
 notifications:
   email: false
+script: go test ./...

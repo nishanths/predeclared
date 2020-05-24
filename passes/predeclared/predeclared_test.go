@@ -1,4 +1,4 @@
-package main
+package predeclared
 
 import (
 	"bytes"
@@ -9,10 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nishanths/predeclared/api"
+	"golang.org/x/tools/go/analysis"
 )
-
-var config *api.Config
 
 func outPath(p string) string { return strings.TrimSuffix(p, ".go") + ".out" }
 
@@ -29,7 +27,10 @@ got:  %s
 	}
 }
 
-func setupConfig(p string) {
+func setupConfig(p string) *config {
+	ignore := ""
+	qualified := false
+
 	// Get the first line.
 	b, err := ioutil.ReadFile(p)
 	if err != nil {
@@ -43,8 +44,7 @@ func setupConfig(p string) {
 	const prefix = "//predeclared"
 	line := string(b[:idx])
 	if !strings.HasPrefix(line, prefix) {
-		config = initConfig()
-		return
+		return newConfig(ignore, qualified)
 	} else {
 		line = strings.TrimPrefix(line, prefix)
 	}
@@ -55,47 +55,39 @@ func setupConfig(p string) {
 		switch arg {
 		case "-ignore":
 			i++
-			*ignore = args[i]
+			ignore = args[i]
 		case "-q":
-			*qualified = true
+			qualified = true
 		default:
 			panic("unhandled flag")
 		}
 		i++
 	}
 
-	config = initConfig()
-}
-
-func resetConfig() {
-	config = nil
-	*ignore = ""
-	*qualified = false
+	return newConfig(ignore, qualified)
 }
 
 func TestAll(t *testing.T) {
 	filenames := []string{
-		"testdata/example1.go",
-		"testdata/example2.go",
-		"testdata/example3.go",
-		"testdata/ignore.go",
-		"testdata/all.go",
-		"testdata/all-q.go",
-		"testdata/no-issues.go",
-		"testdata/no-issues2.go",
+		"../../testdata/example1.go",
+		"../../testdata/example2.go",
+		"../../testdata/example3.go",
+		"../../testdata/ignore.go",
+		"../../testdata/all.go",
+		"../../testdata/all-q.go",
+		"../../testdata/no-issues.go",
+		"../../testdata/no-issues2.go",
 	}
 
 	for i, path := range filenames {
 		if testing.Verbose() {
 			t.Logf("test [%d]: %s", i, path)
 		}
-		resetConfig()
-		setupConfig(path)
-		runOneFile(t, path)
+		runOneFile(t, setupConfig(path), path)
 	}
 }
 
-func runOneFile(t *testing.T, path string) {
+func runOneFile(t *testing.T, cfg *config, path string) {
 	src, err := ioutil.ReadFile(path)
 	if err != nil {
 		t.Errorf("failed to read file: %s", err)
@@ -109,13 +101,15 @@ func runOneFile(t *testing.T, path string) {
 	}
 
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, path, src, parserMode())
+	file, err := parser.ParseFile(fset, path, src, parser.AllErrors)
 	if err != nil {
 		t.Errorf("failed to parse file")
 		return
 	}
 
-	issues := api.ProcessFile(config, fset, file)
+	dummyReportFunc := func(analysis.Diagnostic) {}
+
+	issues := processFile(dummyReportFunc, cfg, fset, file)
 	var buf bytes.Buffer
 	for _, issue := range issues {
 		fmt.Fprintf(&buf, "%s\n", issue)

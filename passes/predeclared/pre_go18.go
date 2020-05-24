@@ -1,6 +1,6 @@
 // +build !go1.8
 
-package api
+package predeclared
 
 func isPredeclaredIdent(name string) bool {
 	return predeclaredIdents[name]
