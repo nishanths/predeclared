@@ -11,6 +11,12 @@ go get github.com/nishanths/predeclared
 
 See [godoc](https://godoc.org/github.com/nishanths/predeclared) or run `predeclared` without arguments to print usage.
 
+## Test
+
+```
+cd passes/predeclared && go test
+```
+
 ## Examples
 
 Given a package with the file:
