@@ -44,12 +44,14 @@ example.go:7:2: variable "string" has same name as predeclared identifier
 example.go:11:6: type "int" has same name as predeclared identifier
 ```
 
-Running the program on the standard library's `text` package's path produces:
+Running the program on the standard library's `text` package and subpackages produces:
 
 ```sh
-$ predeclared text
-/usr/local/go/src/text/template/exec_test.go:209:21: param "error" has same name as predeclared identifier
-/usr/local/go/src/text/template/parse/node.go:496:33: param "true" has same name as predeclared identifier
-/usr/local/go/src/text/template/parse/node.go:537:3: variable "rune" has same name as predeclared identifier
-/usr/local/go/src/text/template/template.go:215:30: param "new" has same name as predeclared identifier
+$ predeclared text/...
+/usr/local/go/src/text/template/parse/node.go:554:33: param "true" has same name as predeclared identifier
+/usr/local/go/src/text/template/parse/node.go:599:3: variable "rune" has same name as predeclared identifier
+/usr/local/go/src/text/template/funcs.go:164:36: param "cap" has same name as predeclared identifier
+/usr/local/go/src/text/template/funcs.go:233:3: variable "cap" has same name as predeclared identifier
+/usr/local/go/src/text/template/template.go:218:30: param "new" has same name as predeclared identifier
+/usr/local/go/src/text/template/exec_test.go:232:21: param "error" has same name as predeclared identifier
 ```
