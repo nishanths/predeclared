@@ -1,3 +1,5 @@
+// Package predeclared provides a static analysis (used by the predeclared command)
+// that can detect declarations in Go code that shadow one of Go's predeclared identifiers.
 package predeclared
 
 import (
