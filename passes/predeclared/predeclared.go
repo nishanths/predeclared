@@ -11,14 +11,21 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
+// Flag names used by the analyzer. They are exported for use by analyzer
+// driver programs.
+const (
+	IgnoreFlag    = "ignore"
+	QualifiedFlag = "q"
+)
+
 var (
 	fIgnore    string
 	fQualified bool
 )
 
 func init() {
-	Analyzer.Flags.StringVar(&fIgnore, "ignore", "", "comma-separated list of predeclared identifiers to not report on")
-	Analyzer.Flags.BoolVar(&fQualified, "q", false, "include method names and field names (i.e., qualified names) in checks")
+	Analyzer.Flags.StringVar(&fIgnore, IgnoreFlag, "", "comma-separated list of predeclared identifiers to not report on")
+	Analyzer.Flags.BoolVar(&fQualified, QualifiedFlag, false, "include method names and field names (i.e., qualified names) in checks")
 }
 
 var Analyzer = &analysis.Analyzer{
