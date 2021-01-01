@@ -5,3 +5,6 @@ predeclared
 
 # macOS
 .DS_Store
+
+tags
+*.swp

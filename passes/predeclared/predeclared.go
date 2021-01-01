@@ -18,7 +18,7 @@ var (
 
 func init() {
 	Analyzer.Flags.StringVar(&fIgnore, "ignore", "", "comma-separated list of predeclared identifiers to not report on")
-	Analyzer.Flags.BoolVar(&fQualified, "q", false, "include method names and field names (ie. qualified names) in checks")
+	Analyzer.Flags.BoolVar(&fQualified, "q", false, "include method names and field names (i.e., qualified names) in checks")
 }
 
 var Analyzer = &analysis.Analyzer{
