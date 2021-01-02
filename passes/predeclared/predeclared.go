@@ -70,7 +70,7 @@ type issue struct {
 
 func (i issue) String() string {
 	pos := i.fset.Position(i.ident.Pos())
-	return fmt.Sprintf("%s: %s %q has same name as predeclared identifier", pos, i.kind, i.ident.Name)
+	return fmt.Sprintf("%s: %s %s has same name as predeclared identifier", pos, i.kind, i.ident.Name)
 }
 
 func processFile(report func(analysis.Diagnostic), cfg *config, fset *token.FileSet, file *ast.File) []issue { // nolint: gocyclo
@@ -81,7 +81,7 @@ func processFile(report func(analysis.Diagnostic), cfg *config, fset *token.File
 			report(analysis.Diagnostic{
 				Pos:     x.Pos(),
 				End:     x.End(),
-				Message: fmt.Sprintf("%s %q has same name as predeclared identifier", kind, x.Name),
+				Message: fmt.Sprintf("%s %s has same name as predeclared identifier", kind, x.Name),
 			})
 			issues = append(issues, issue{x, kind, fset})
 		}
