@@ -30,7 +30,7 @@ func init() {
 
 var Analyzer = &analysis.Analyzer{
 	Name: "predeclared",
-	Doc:  "find code that overrides one of Go's predeclared identifiers",
+	Doc:  "find code that shadows one of Go's predeclared identifiers",
 	Run:  run,
 }
 
