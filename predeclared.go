@@ -28,7 +28,7 @@
 package main
 
 import (
-	"github.com/nishanths/predeclared/passes/predeclared"
+	"github.com/thempatel/predeclared/passes/predeclared"
 	"golang.org/x/tools/go/analysis/singlechecker"
 )
 
