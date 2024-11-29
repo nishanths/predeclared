@@ -5,6 +5,7 @@ package predeclared
 import (
 	"fmt"
 	"go/ast"
+	"go/doc"
 	"go/token"
 	"strings"
 
@@ -77,7 +78,7 @@ func processFile(report func(analysis.Diagnostic), cfg *config, fset *token.File
 	var issues []issue
 
 	maybeReport := func(x *ast.Ident, kind string) {
-		if _, isIgnored := cfg.ignoredIdents[x.Name]; !isIgnored && isPredeclaredIdent(x.Name) {
+		if _, isIgnored := cfg.ignoredIdents[x.Name]; !isIgnored && doc.IsPredeclared(x.Name) {
 			report(analysis.Diagnostic{
 				Pos:     x.Pos(),
 				End:     x.End(),
