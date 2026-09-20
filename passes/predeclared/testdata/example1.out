@@ -1,5 +1,0 @@
-testdata/example1.go:3:9: package name print has same name as predeclared identifier
-testdata/example1.go:5:6: function append has same name as predeclared identifier
-testdata/example1.go:6:2: variable copy has same name as predeclared identifier
-testdata/example1.go:11:2: method new has same name as predeclared identifier
-testdata/example1.go:14:15: method new has same name as predeclared identifier

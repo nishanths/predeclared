@@ -1,3 +1,0 @@
-testdata/example3.go:7:6: function copy has same name as predeclared identifier
-testdata/example3.go:12:3: variable string has same name as predeclared identifier
-testdata/example3.go:18:6: function print has same name as predeclared identifier

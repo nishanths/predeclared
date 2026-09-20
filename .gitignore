@@ -1,10 +1,4 @@
 # binary
-predeclared
+/predeclared
 
-!passes/predeclared
-
-# macOS
 .DS_Store
-
-tags
-*.swp

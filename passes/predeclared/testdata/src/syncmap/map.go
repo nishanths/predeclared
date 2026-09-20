@@ -281,7 +281,7 @@ func (m *Map) Delete(key interface{}) {
 	}
 }
 
-func (e *entry) delete() (hadValue bool) {
+func (e *entry) delete() (hadValue bool) { // want "^delete: same name as predeclared identifier$"
 	for {
 		p := atomic.LoadPointer(&e.p)
 		if p == nil || p == expunged {

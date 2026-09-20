@@ -1,63 +1,64 @@
-# predeclared [![Build Status](https://travis-ci.org/nishanths/predeclared.svg?branch=master)](https://travis-ci.org/nishanths/predeclared) [![Godoc](https://godoc.org/github.com/nishanths/predeclared?status.svg)](http://godoc.org/github.com/nishanths/predeclared)
+The predeclared static analysis finds declarations in Go source code
+that shadow any of Go's predeclared identifiers.
 
+The analysis and its flags are documented in the package comment in
+the 'passes/predeclared/predeclared.go' file. The list of predeclared
+identifiers can be found in the language specification. The predeclared
+identifiers, as of go1.26, are listed below for reference.
 
-Find code that overrides one of Go's predeclared identifiers (`new`, `make`, `append` `uint`, etc.).
+<https://golang.org/ref/spec#Predeclared_identifiers>
 
-The list of predeclared identifiers can be found in the [spec](https://golang.org/ref/spec#Predeclared_identifiers).
+	Types:
+	    any bool byte comparable
+	    complex64 complex128 error float32 float64
+	    int int8 int16 int32 int64 rune string
+	    uint uint8 uint16 uint32 uint64 uintptr
 
-```
-go get github.com/nishanths/predeclared
-```
+	Constants:
+	    true false iota
 
-See [godoc](https://godoc.org/github.com/nishanths/predeclared) or run `predeclared` without arguments to print usage.
+	Zero value:
+	    nil
 
-## Test
+	Functions:
+	    append cap clear close complex copy delete imag len
+	    make max min new panic print println real recover
 
-```
-cd passes/predeclared && go test
-```
+# Usage
 
-## Examples
+The standalone predeclared command can be installed using 'go install'.
 
-Given a package with the file:
+	go install github.com/nishanths/predeclared
 
-```go
-package pkg // import "example.org/foo/pkg"
+	predeclared [flags] [package ...]
 
-func copy()  {}
-func print() {}
+The Go package in the 'passes/predeclared' directory provides an
+analysis.Analyzer value that can be used by analysis driver programs.
+For more details see package analysis:
 
-func foo() string {
-	string := "x"
-	return string
-}
+    golang.org/x/tools/go/analysis
 
-type int struct{}
-```
+# Examples
 
-running:
+For the source file:
 
-```
-predeclared example.org/foo/pkg
-```
+	package example
 
-prints:
+	import "strconv"
 
-```
-example.go:3:6: function "copy" has same name as predeclared identifier
-example.go:4:6: function "print" has same name as predeclared identifier
-example.go:7:2: variable "string" has same name as predeclared identifier
-example.go:11:6: type "int" has same name as predeclared identifier
-```
+	func clear[S ~[]E, E any](s S) S { ... }
 
-Running the program on the standard library's `text` package and subpackages produces:
+	func baz(s string) {
+		const max = 8192
+		int, err := strconv.Atoi(s)
+		...
+	}
 
-```sh
-$ predeclared text/...
-/usr/local/go/src/text/template/parse/node.go:554:33: param "true" has same name as predeclared identifier
-/usr/local/go/src/text/template/parse/node.go:599:3: variable "rune" has same name as predeclared identifier
-/usr/local/go/src/text/template/funcs.go:164:36: param "cap" has same name as predeclared identifier
-/usr/local/go/src/text/template/funcs.go:233:3: variable "cap" has same name as predeclared identifier
-/usr/local/go/src/text/template/template.go:218:30: param "new" has same name as predeclared identifier
-/usr/local/go/src/text/template/exec_test.go:232:21: param "error" has same name as predeclared identifier
-```
+	func copy(dst, src string) { ... }
+
+the predeclared analysis reports these diagnostics:
+
+	/tmp/example.go:5:6: clear: shadows predeclared identifier
+	/tmp/example.go:8:8: max: shadows predeclared identifier
+	/tmp/example.go:9:2: int: shadows predeclared identifier
+	/tmp/example.go:14:6: copy: shadows predeclared identifier

@@ -1,4 +1,0 @@
-testdata/example2.go:1:9: package name print has same name as predeclared identifier
-testdata/example2.go:3:8: import name cap has same name as predeclared identifier
-testdata/example2.go:5:6: function make has same name as predeclared identifier
-testdata/example2.go:6:2: variable copy has same name as predeclared identifier
