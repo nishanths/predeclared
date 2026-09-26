@@ -9,7 +9,7 @@ func TestParseMode(t *testing.T) {
 	type testcase struct {
 		input string
 		modes []mode
-		error string
+		err   string
 	}
 
 	testcases := []testcase{
@@ -24,14 +24,15 @@ func TestParseMode(t *testing.T) {
 
 	for _, tt := range testcases {
 		modes, err := parseMode(tt.input)
-		if err != nil && err.Error() != tt.error {
-			t.Fatalf("parseMode(%q): got error: %q, want: %q", tt.input, err, tt.error)
-		}
-		if err == nil && tt.error != "" {
-			t.Fatalf("parseMode(%q): got nil error, want: %q", tt.input, tt.error)
-		}
-		if !slices.Equal(modes, tt.modes) {
-			t.Fatalf("parseMode(%q): got: %v, want: %v", tt.input, modes, tt.modes)
+		switch {
+		case err == nil && tt.err != "":
+			t.Errorf("parseMode(%q): got nil error, want: %q", tt.input, tt.err)
+		case err != nil && tt.err == "":
+			t.Errorf("parseMode(%q): got error %q, want nil", tt.input, err)
+		case err != nil && err.Error() != tt.err:
+			t.Errorf("parseMode(%q): got error %q, want %q", tt.input, err, tt.err)
+		case !slices.Equal(modes, tt.modes):
+			t.Errorf("parseMode(%q): got: %v, want: %v", tt.input, modes, tt.modes)
 		}
 	}
 }
