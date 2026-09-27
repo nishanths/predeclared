@@ -12,12 +12,14 @@ import (
 	clear "example.org/f"           // want "^clear: shadows predeclared identifier$" "^clear: same name as predeclared identifier$"
 )
 
-func copy(dst, src string) {} // want "^copy: shadows predeclared identifier$" "^copy: same name as predeclared identifier$"
+const complex128 = 0 // want "^complex128: shadows predeclared identifier$" "^complex128: same name as predeclared identifier$"
 
 type (
 	complex struct{} // want "^complex: shadows predeclared identifier$" "^complex: same name as predeclared identifier$"
-	nil     = func() // want "^nil: shadows predeclared identifier$" "^nil: same name as predeclared identifier$"
 )
+
+var nil = func() {}        // want "^nil: shadows predeclared identifier$" "^nil: same name as predeclared identifier$"
+func copy(dst, src string) {} // want "^copy: shadows predeclared identifier$" "^copy: same name as predeclared identifier$"
 
 func f1() {
 	const rune = 0 // want "^rune: same name as predeclared identifier$" "^rune: shadows predeclared identifier$"
@@ -60,9 +62,9 @@ normal:
 
 // multi-level shadow.
 func f3() {
-	// Note: No 'shadow' diagnostics. The name 'nil' exists
+	// Note: No 'shadow' diagnostic. The name 'nil' exists
 	// in ancestor scopes and is not the predeclared identifier.
-	// See the earlier 'type nil ...' declaration.
+	// See the earlier 'nil' declaration.
 	nil := 0 // want "^nil: same name as predeclared identifier$"
 
 	if randeven() {
@@ -125,6 +127,12 @@ func f8() {
 	type iota = int64   // want "^iota: shadows predeclared identifier$" "^iota: same name as predeclared identifier$"
 	type int32 = uint16 // want "^int32: shadows predeclared identifier$" "^int32: same name as predeclared identifier$"
 	type byte = uint8   // want "^byte: shadows predeclared identifier$" "^byte: same name as predeclared identifier$"
+}
+
+func f9() {
+	var c chan int
+	append := <-c // want "^append: shadows predeclared identifier$" "^append: same name as predeclared identifier$"
+	_ = append
 }
 
 type t1 byte

@@ -1,10 +1,15 @@
-The predeclared static analysis finds declarations in Go source code
-that shadow any of Go's predeclared identifiers.
+The predeclared static analysis finds declarations in Go source
+code that shadow any of Go's predeclared identifiers.
 
-The analysis and its flags are documented in the package comment in
-the 'passes/predeclared/predeclared.go' file. The list of predeclared
-identifiers can be found in the language specification. The predeclared
-identifiers, as of go1.26, are listed below for reference.
+The analysis and available flags are documented in the package
+comment of package predeclared in the 'passes/predeclared'
+directory.
+
+<https://pkg.go.dev/github.com/nishanths/predeclared/passes/predeclared>
+
+The list of predeclared identifiers can be found in the language
+specification. The predeclared identifiers, as of go1.26, are
+listed below for reference.
 
 <https://golang.org/ref/spec#Predeclared_identifiers>
 
@@ -28,15 +33,12 @@ identifiers, as of go1.26, are listed below for reference.
 
 The standalone predeclared command can be installed using 'go install'.
 
-	go install github.com/nishanths/predeclared
-
-	predeclared [flags] [package ...]
+	go install github.com/nishanths/predeclared@latest
 
 The Go package in the 'passes/predeclared' directory provides an
-analysis.Analyzer value that can be used by analysis driver programs.
-For more details see package analysis:
-
-    golang.org/x/tools/go/analysis
+analysis.Analyzer value that can be used by analysis driver
+programs. See <https://golang.org/x/tools/go/analysis> for more
+details.
 
 # Examples
 

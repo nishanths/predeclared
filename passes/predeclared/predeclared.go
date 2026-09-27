@@ -14,9 +14,9 @@ The analysis may be configured with flags. The synopsis is:
 
 The flags are described below.
 
-The -mode flag argument specifies the categories of issues that
-the analysis should report. The argument is a string containing
-one or more of the following letters. The default argument is the
+The -mode flag specifies the categories of issues that the
+analysis should report. The argument is a string containing one
+or more of the following letters. The default argument is the
 string "s".
 
 	d    declaration has same name as a predeclared identifier
@@ -27,12 +27,11 @@ the declaration has the same name as the predeclared identifier
 being shadowed. In general the declarations reported for mode 's'
 will be a subset of the declarations reported for mode 'd'.
 
-The -ignore flag argument is a comma-separated list of
-predeclared identifier names for which the analysis will not
-report issues. For example, given the following flag argument,
-the analysis will not report issues for the predeclared
-identifiers new, min, and max. The default argument is an empty
-string.
+The -ignore flag specifies a comma-separated list of predeclared
+identifier names for which the analysis will not report issues.
+For example, given the following argument, the analysis will
+not report issues for the predeclared identifiers new, min, and
+max. The default argument is an empty string.
 
 	-ignore "new,min,max"
 
@@ -102,7 +101,7 @@ func run(pass *analysis.Pass) (any, error) {
 		}
 	}
 
-	modes, err := parseMode(fMode)
+	modes, err := parseModes(fMode)
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for flag -mode: %s", err)
 	}
@@ -119,7 +118,7 @@ func run(pass *analysis.Pass) (any, error) {
 	return nil, nil
 }
 
-func parseMode(s string) ([]mode, error) {
+func parseModes(s string) ([]mode, error) {
 	if s == "" {
 		return nil, errors.New("empty string")
 	}
@@ -228,15 +227,20 @@ func handleObject(obj types.Object, cfg *config, report func(mode, token.Pos, st
 		return
 	}
 
+	// For the purposes of this analysis, the pkgLevelOnly
+	// option means both true package-level declarations and
+	// import declarations.
 	if cfg.pkgLevelOnly {
 		switch obj.(type) {
 		case *types.PkgName:
 			// *types.PkgName represents imported Go
-			// packages (in import declarations).
+			// packages in import declarations.
 			// Proceed below.
-			_ = obj // Dummy statement to verify code coverage.
+			_ = obj // dummy statement to verify code coverage
 		default:
-			// constant, variable, type, or function.
+			// Package-level objects will be either a
+			// constant, variable, type, or function
+			// (does not include method) declaration.
 			if !isPkgLevel(obj) {
 				return
 			}

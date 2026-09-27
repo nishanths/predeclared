@@ -23,16 +23,16 @@ func TestParseMode(t *testing.T) {
 	}
 
 	for _, tt := range testcases {
-		modes, err := parseMode(tt.input)
+		modes, err := parseModes(tt.input)
 		switch {
 		case err == nil && tt.err != "":
-			t.Errorf("parseMode(%q): got nil error, want: %q", tt.input, tt.err)
+			t.Errorf("%q: got nil error, want: %q", tt.input, tt.err)
 		case err != nil && tt.err == "":
-			t.Errorf("parseMode(%q): got error %q, want nil", tt.input, err)
+			t.Errorf("%q: got error %q, want nil", tt.input, err)
 		case err != nil && err.Error() != tt.err:
-			t.Errorf("parseMode(%q): got error %q, want %q", tt.input, err, tt.err)
+			t.Errorf("%q: got error %q, want %q", tt.input, err, tt.err)
 		case !slices.Equal(modes, tt.modes):
-			t.Errorf("parseMode(%q): got: %v, want: %v", tt.input, modes, tt.modes)
+			t.Errorf("%q: got: %v, want: %v", tt.input, modes, tt.modes)
 		}
 	}
 }

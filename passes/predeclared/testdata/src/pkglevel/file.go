@@ -1,18 +1,20 @@
 package rune
 
 import (
-	"example.org/comparable"        // want "^comparable: shadows predeclared identifier$"
+	"example.org/comparable"        // want "^comparable: shadows predeclared identifier$" "^comparable: same name as predeclared identifier$"
 	_ "example.org/comparable"      // OK
 	cmprbl "example.org/comparable" // OK
-	clear "example.org/f"           // want "^clear: shadows predeclared identifier$"
+	clear "example.org/f"           // want "^clear: shadows predeclared identifier$" "^clear: same name as predeclared identifier$"
 )
 
-func copy(dst, src string) {} // want "^copy: shadows predeclared identifier$"
+const complex128 = 0 // want "^complex128: shadows predeclared identifier$" "^complex128: same name as predeclared identifier$"
 
 type (
-	complex struct{} // want "^complex: shadows predeclared identifier$"
-	nil     = func() // want "^nil: shadows predeclared identifier$"
+	complex struct{} // want "^complex: shadows predeclared identifier$" "^complex: same name as predeclared identifier$"
 )
+
+var nil = func() {}        // want "^nil: shadows predeclared identifier$" "^nil: same name as predeclared identifier$"
+func copy(dst, src string) {} // want "^copy: shadows predeclared identifier$" "^copy: same name as predeclared identifier$"
 
 func f1() {
 	const rune = 0
@@ -28,6 +30,11 @@ func f1() {
 	_, _ = len, cap
 	_ = print
 }
+
+type t1 byte
+
+func (byte *t1) m1() {}
+func (t *t1) byte()  {}
 
 // suppress "imported and not used" compile errors
 var _ = clear.X
