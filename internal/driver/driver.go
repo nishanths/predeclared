@@ -26,7 +26,7 @@ func ParseFlags(progname string, as []*analysis.Analyzer) {
 		})
 	}
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "usage: %s [flags] [package ...]\n", progname)
+		fmt.Fprintf(os.Stderr, "usage: %s [flags] [packages]\n", progname)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
