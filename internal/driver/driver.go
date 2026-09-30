@@ -16,7 +16,7 @@ const (
 	contextLines = -1
 )
 
-func ParseFlags(progname string, as []*analysis.Analyzer) {
+func ParseFlags(progname string, as ...*analysis.Analyzer) {
 	for _, a := range as {
 		a.Flags.VisitAll(func(f *flag.Flag) {
 			if flag.Lookup(f.Name) != nil {
@@ -32,31 +32,46 @@ func ParseFlags(progname string, as []*analysis.Analyzer) {
 	flag.Parse()
 }
 
-func Run(args []string, loadMode packages.LoadMode, as []*analysis.Analyzer) {
+func Run(args []string, loadMode packages.LoadMode, as ...*analysis.Analyzer) (exitStatus int) {
+	exitAtLeast := func(s int) {
+		if s > exitStatus {
+			exitStatus = s
+		}
+	}
+
 	cfg := packages.Config{
 		Mode:  loadMode | packages.NeedModule,
 		Tests: includeTests,
 	}
-	initial, err := packages.Load(&cfg, args...)
+	pkgs, err := packages.Load(&cfg, args...)
 	if err != nil {
-		log.Fatalf("error loading packages: %s", err)
+		log.Printf("error loading packages: %s", err)
+		exitAtLeast(1)
+		return
 	}
 
-	if len(initial) == 0 {
-		log.Fatal("matched no packages")
+	if len(pkgs) == 0 {
+		log.Println("matched no packages")
+		exitAtLeast(1)
+		return
 	}
 
-	if packages.PrintErrors(initial) > 0 {
-		os.Exit(1)
+	if packages.PrintErrors(pkgs) > 0 {
+		exitAtLeast(1)
+		// Do not return, the analysis can still proceed.
 	}
 
-	graph, err := checker.Analyze(as, initial, nil)
+	graph, err := checker.Analyze(as, pkgs, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		exitAtLeast(1)
+		return
 	}
 
 	if err := graph.PrintText(os.Stderr, contextLines); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		exitAtLeast(1)
+		return
 	}
 
 	var errors, diags int
@@ -69,13 +84,13 @@ func Run(args []string, loadMode packages.LoadMode, as []*analysis.Analyzer) {
 			diags += len(act.Diagnostics)
 		}
 	}
-	// Note: The exit status values match those used by
+	// Note: These exit status values match those used by
 	// analysis/singlechecker.
 	if errors > 0 {
-		os.Exit(1)
+		exitAtLeast(1)
 	}
 	if diags > 0 {
-		os.Exit(3)
+		exitAtLeast(3)
 	}
-	os.Exit(0)
+	return
 }
