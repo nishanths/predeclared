@@ -44,7 +44,7 @@ details.
 
 For the source file:
 
-	package example
+	package a
 
 	import "strconv"
 
@@ -60,7 +60,7 @@ For the source file:
 
 the predeclared analysis reports these diagnostics:
 
-	/tmp/example.go:5:6: clear: shadows predeclared identifier
-	/tmp/example.go:8:8: max: shadows predeclared identifier
-	/tmp/example.go:9:2: int: shadows predeclared identifier
-	/tmp/example.go:14:6: copy: shadows predeclared identifier
+	a.go:5:6: clear: shadows predeclared identifier
+	a.go:8:8: max: shadows predeclared identifier
+	a.go:9:2: int: shadows predeclared identifier
+	a.go:14:6: copy: shadows predeclared identifier

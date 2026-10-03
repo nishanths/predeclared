@@ -6,10 +6,10 @@ package rune
 import (
 	"math/rand/v2"
 
-	"example.org/comparable"        // want "^comparable: shadows predeclared identifier$" "^comparable: same name as predeclared identifier$"
-	_ "example.org/comparable"      // OK
-	cmprbl "example.org/comparable" // OK
-	clear "example.org/f"           // want "^clear: shadows predeclared identifier$" "^clear: same name as predeclared identifier$"
+	"test/miscpkgs/comparable"        // want "^comparable: shadows predeclared identifier$" "^comparable: same name as predeclared identifier$"
+	_ "test/miscpkgs/comparable"      // OK
+	cmprbl "test/miscpkgs/comparable" // OK
+	clear "test/miscpkgs/f"           // want "^clear: shadows predeclared identifier$" "^clear: same name as predeclared identifier$"
 )
 
 const complex128 = 0 // want "^complex128: shadows predeclared identifier$" "^complex128: same name as predeclared identifier$"
