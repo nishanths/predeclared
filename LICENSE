@@ -61,8 +61,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
-Parts of the analysis driver were modeled after the source code in
-golang.org/x/tools.
+Parts of the analysis driver source code were copied from or were
+modeled after source code in golang.org/x/tools.
 
 Copyright 2009 The Go Authors.
 

@@ -32,7 +32,7 @@ func ParseFlags(progname string, as ...*analysis.Analyzer) {
 	flag.Parse()
 }
 
-func Run(args []string, loadMode packages.LoadMode, as ...*analysis.Analyzer) (exitStatus int) {
+func Run(args []string, as ...*analysis.Analyzer) (exitStatus int) {
 	exitAtLeast := func(s int) {
 		if s > exitStatus {
 			exitStatus = s
@@ -40,7 +40,7 @@ func Run(args []string, loadMode packages.LoadMode, as ...*analysis.Analyzer) (e
 	}
 
 	cfg := packages.Config{
-		Mode:  loadMode | packages.NeedModule,
+		Mode:  loadMode(as) | packages.NeedModule,
 		Tests: includeTests,
 	}
 	pkgs, err := packages.Load(&cfg, args...)
@@ -93,4 +93,34 @@ func Run(args []string, loadMode packages.LoadMode, as ...*analysis.Analyzer) (e
 		exitAtLeast(3)
 	}
 	return
+}
+
+func loadMode(as []*analysis.Analyzer) packages.LoadMode {
+	if needFacts(as) {
+		return packages.LoadAllSyntax
+	}
+	return packages.LoadSyntax
+}
+
+// The needFacts function was copied from file
+// go/analysis/internal/checker/checker.go in the
+// golang.org/x/tools module.
+// See LICENSE file.
+
+func needFacts(analyzers []*analysis.Analyzer) bool {
+	seen := make(map[*analysis.Analyzer]bool)
+	var q []*analysis.Analyzer // for BFS
+	q = append(q, analyzers...)
+	for len(q) > 0 {
+		a := q[0]
+		q = q[1:]
+		if !seen[a] {
+			seen[a] = true
+			if len(a.FactTypes) > 0 {
+				return true
+			}
+			q = append(q, a.Requires...)
+		}
+	}
+	return false
 }
