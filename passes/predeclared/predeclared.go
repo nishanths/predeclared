@@ -155,23 +155,11 @@ type config struct {
 	ignore       map[string]struct{}
 }
 
-func assert(v bool) {
-	if !v {
-		panic("assertion failed")
-	}
-}
-
 func shadowsPredeclared(obj types.Object) bool {
-	if !doc.IsPredeclared(obj.Name()) {
-		panic("bad object name")
-	}
-
 	u := types.Universe.Lookup(obj.Name())
-	assert(u != nil) // should not fail; see doc.IsPredeclared guard above.
-
-	// Note that if obj is a label, field, or method, then c
-	// will be nil. The validity of the 'c == u' result still
-	// holds because u is always non-nil.
+	if u == nil {
+		return false
+	}
 	c := lookupWhile(obj.Parent(), obj.Name(), obj.Pos(), func(obj2 types.Object) bool { return obj2 == obj })
 	return c == u
 }
@@ -233,12 +221,12 @@ func handleObject(obj types.Object, cfg *config, report func(mode, token.Pos, st
 	if cfg.pkgLevelOnly {
 		switch obj.(type) {
 		case *types.PkgName:
-			// *types.PkgName represents imported Go
-			// packages in import declarations.
+			// *types.PkgName represents an imported Go
+			// package in an import declaration.
 			// Proceed below.
 			_ = obj // dummy statement to verify code coverage
 		default:
-			// Package-level objects will be either a
+			// Package-level objects will be a
 			// constant, variable, type, or function
 			// (does not include method) declaration.
 			if !isPkgLevel(obj) {
@@ -247,14 +235,13 @@ func handleObject(obj types.Object, cfg *config, report func(mode, token.Pos, st
 		}
 	}
 
-modeloop:
 	for _, mode := range cfg.modes {
 		switch mode {
 		case declare:
 			switch obj := obj.(type) {
 			case *types.Var:
 				if obj.IsField() && !cfg.checkFields {
-					continue modeloop
+					continue
 				}
 			case *types.Func:
 				// go/types documentation for (*types.Func).Parent:
@@ -262,7 +249,7 @@ modeloop:
 				// is declared. The result is nil for methods and
 				// struct fields."
 				if obj.Parent() == nil && !cfg.checkFields {
-					continue modeloop
+					continue
 				}
 			}
 		case shadow:
@@ -273,18 +260,18 @@ modeloop:
 				// Go spec: "In contrast to other identifiers, labels are
 				// not block scoped and do not conflict with identifiers
 				// that are not labels."
-				continue modeloop
+				continue
 			case *types.Var:
 				if obj.IsField() {
-					continue modeloop
+					continue
 				}
 			case *types.Func:
 				if obj.Parent() == nil {
-					continue modeloop
+					continue
 				}
 			}
 			if !shadowsPredeclared(obj) {
-				continue modeloop
+				continue
 			}
 		}
 		report(mode, obj.Pos(), obj.Name())
