@@ -1,9 +1,12 @@
-The predeclared static analysis finds declarations in Go source
-code that shadow any of Go's predeclared identifiers.
+The predeclared static analysis finds
+declarations in Go source code that shadow any of Go's
+predeclared identifiers.
 
-The analysis and available flags are documented in the package
-comment of package predeclared in the 'passes/predeclared'
-directory.
+The analysis and the available flags are documented in the package
+comment in the 'passes/predeclared/predeclared.go' file. The
+documentation can be read using 'go doc' or on pkg.go.dev.
+
+	go doc github.com/nishanths/predeclared/passes/predeclared
 
 <https://pkg.go.dev/github.com/nishanths/predeclared/passes/predeclared>
 
@@ -48,7 +51,7 @@ For the source file:
 
 	import "strconv"
 
-	func clear[S ~[]E, E any](s S) S { ... }
+	func clear[S ~[]E, E any](s S) { ... }
 
 	func baz(s string) {
 		const max = 8192

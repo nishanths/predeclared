@@ -1,7 +1,9 @@
 /*
 Package predeclared provides a static analysis that finds
-declarations that shadow any of Go's predeclared identifiers. The
-list of predeclared identifiers can be found in the language
+declarations in Go source code that shadow any of Go's
+predeclared identifiers.
+
+The list of predeclared identifiers can be found in the language
 specification.
 
 	https://golang.org/ref/spec#Predeclared_identifiers
