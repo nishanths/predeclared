@@ -1,51 +1,49 @@
-/*
-Package predeclared provides a static analysis that finds
-declarations in Go source code that shadow any of Go's
-predeclared identifiers.
-
-The list of predeclared identifiers can be found in the language
-specification.
-
-	https://golang.org/ref/spec#Predeclared_identifiers
-
-# Flags
-
-The analysis may be configured with flags. The synopsis is:
-
-	[-pkglevel] [-q] [-ignore string] [-mode string]
-
-The flags are described below.
-
-The -mode flag specifies the categories of issues that the
-analysis should report. The argument is a string containing one
-or more of the following letters. The default argument is the
-string "s".
-
-	d    declaration has same name as a predeclared identifier
-	s    declaration shadows a predeclared identifier
-
-Note that shadowing necessarily implies that the identifier in
-the declaration has the same name as the predeclared identifier
-being shadowed. In general the declarations reported for mode 's'
-will be a subset of the declarations reported for mode 'd'.
-
-The -ignore flag specifies a comma-separated list of predeclared
-identifier names for which the analysis will not report issues.
-For example, given the following argument, the analysis will
-not report issues for the predeclared identifiers new, min, and
-max. The default argument is an empty string.
-
-	-ignore "new,min,max"
-
-The -pkglevel flag restricts the analysis to package-level
-declarations and import declarations. By default all
-declarations are analyzed.
-
-The -q flag extends the analysis to field names (in struct type
-declarations) and method names (in method declarations and
-interface type declarations). This is applicable if the
--mode argument includes 'd'.
-*/
+// Package predeclared provides a static analysis that finds
+// declarations in Go source code that shadow any of Go's
+// predeclared identifiers.
+//
+// The list of predeclared identifiers can be found in the language
+// specification.
+//
+//	https://golang.org/ref/spec#Predeclared_identifiers
+//
+// # Flags
+//
+// The analysis may be configured with flags. The synopsis is:
+//
+//	[-pkglevel] [-q] [-ignore string] [-mode string]
+//
+// The flags are described below.
+//
+// The -mode flag specifies the categories of issues that the
+// analysis should report. The argument is a string containing one
+// or more of the following letters. The default argument is the
+// string "s".
+//
+//	d    declaration has same name as a predeclared identifier
+//	s    declaration shadows a predeclared identifier
+//
+// Note that shadowing necessarily implies that the identifier in
+// the declaration has the same name as the predeclared identifier
+// being shadowed. In general the declarations reported for mode 's'
+// will be a subset of the declarations reported for mode 'd'.
+//
+// The -ignore flag specifies a comma-separated list of predeclared
+// identifier names for which the analysis will not report issues.
+// For example, given the following argument, the analysis will
+// not report issues for the predeclared identifiers new, min, and
+// max. The default argument is an empty string.
+//
+//	-ignore "new,min,max"
+//
+// The -pkglevel flag restricts the analysis to package-level
+// declarations and import declarations. By default all
+// declarations are analyzed.
+//
+// The -q flag extends the analysis to field names (in struct type
+// declarations) and method names (in method declarations and
+// interface type declarations). This is applicable if the
+// -mode argument includes 'd'.
 package predeclared
 
 import (
