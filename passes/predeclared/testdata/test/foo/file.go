@@ -90,7 +90,7 @@ func f3() {
 		_ = new
 	}
 
-	// suppress "declared not and used" compile errors.
+	// suppress "declared and not used" compile errors.
 	_ = nil
 	_ = new
 }
@@ -152,6 +152,12 @@ type i1 interface {
 	~float64
 	normal() uint32
 	new() any
+}
+
+func _() {
+	f := func(_ any) {}
+	f(struct{ recover interface{ uint() uint32 } }{})
+	var _ interface{ new() any }
 }
 
 func randeven() bool { return rand.Int()%2 == 0 }

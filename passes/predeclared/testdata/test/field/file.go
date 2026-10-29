@@ -19,3 +19,10 @@ type i1 interface {
 	uint() uint32 // want "^uint: same name as predeclared identifier$"
 	new() any     // want "^new: same name as predeclared identifier$"
 }
+
+func _() {
+	f := func(_ any) {}
+	f(struct{ recover interface{ uint() uint32 } }{}) // want "^recover: same name as predeclared identifier$" "^uint: same name as predeclared identifier$"
+	var _ interface{ new() any }                      // want "^new: same name as predeclared identifier$"
+
+}

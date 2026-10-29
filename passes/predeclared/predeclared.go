@@ -40,10 +40,9 @@
 // declarations and import declarations. By default all
 // declarations are analyzed.
 //
-// The -q flag extends the analysis to field names (in struct type
-// declarations) and method names (in method declarations and
-// interface type declarations). This is applicable if the
-// -mode argument includes 'd'.
+// The -q flag extends the analysis to field names (in struct
+// types) and method names (in method declarations and interface
+// types). This is applicable if the -mode argument includes 'd'.
 package predeclared
 
 import (
