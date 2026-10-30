@@ -49,7 +49,6 @@ import (
 	"errors"
 	"fmt"
 	"go/ast"
-	"go/doc"
 	"go/token"
 	"go/types"
 	"slices"
@@ -210,7 +209,9 @@ func handleObject(obj types.Object, cfg *config, report func(mode, token.Pos, st
 		return
 	}
 
-	if !doc.IsPredeclared(obj.Name()) {
+	// Per go/types documentation, the types.Universe
+	// scope contains all predeclared objects of Go.
+	if types.Universe.Lookup(obj.Name()) == nil {
 		return
 	}
 
