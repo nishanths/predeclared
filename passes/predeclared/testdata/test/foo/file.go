@@ -95,9 +95,17 @@ func f3() {
 	_ = new
 }
 
-func f4[T any](n int, make func() T) {}                    // want "^make: shadows predeclared identifier$" "^make: same name as predeclared identifier$"
-func f5[error int32]()               {}                    // want "^error: shadows predeclared identifier$" "^error: same name as predeclared identifier$"
-func f6() (true bool)                { return randeven() } // want "^true: shadows predeclared identifier$" "^true: same name as predeclared identifier$"
+func f4[T any](n int, make func() T) {} // want "^make: shadows predeclared identifier$" "^make: same name as predeclared identifier$"
+func f5[error int32]() { // want "^error: shadows predeclared identifier$" "^error: same name as predeclared identifier$"
+	type _[error int32] interface { // want "^error: same name as predeclared identifier$"
+		f() error
+	}
+	type _[make int32] struct { // want "^make: shadows predeclared identifier$" "^make: same name as predeclared identifier$"
+		f func() make
+		g func() error
+	}
+}
+func f6() (true bool) { return randeven() } // want "^true: shadows predeclared identifier$" "^true: same name as predeclared identifier$"
 
 // variable in type switch header.
 func f7() {
